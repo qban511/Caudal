@@ -588,6 +588,7 @@ function render(){
 
 /* ============ modales ============ */
 function openSheet(html){
+  closeSheet(); // evita paneles superpuestos (ej. abrir contraseña desde Ajustes)
   var ov=document.createElement('div'); ov.className='overlay'; ov.id='sheet-ov';
   ov.innerHTML='<div class="sheet" id="sheet"><div class="grab"></div>'+html+'</div>';
   ov.addEventListener('click',function(e){ if(e.target===ov) closeSheet(); });

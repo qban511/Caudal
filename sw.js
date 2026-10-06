@@ -3,7 +3,7 @@
    - Solo cachea TUS propios archivos (mismo origen). Nunca contacta con nada externo.
    - El HTML va "red primero": así las actualizaciones llegan siempre que haya conexión.
    Sube el número de versión al publicar cambios para purgar la caché antigua. */
-var CACHE = 'caudal-v3';
+var CACHE = 'caudal-v4';
 var ASSETS = ['./','./index.html','./manifest.json','./icon-180.png','./icon-192.png','./icon-512.png'];
 
 self.addEventListener('install', function(e){
