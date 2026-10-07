@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>Caudal · Control financiero privado</title>
 <meta name="theme-color" content="#0E1512" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -36,14 +36,15 @@
     --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   }
   *{box-sizing:border-box;}
-  html,body{margin:0;height:100%;}
-  body{background:var(--ink);color:var(--fog);font-family:var(--sans);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;}
+  html,body{margin:0;height:100%;width:100%;overflow-x:hidden;overscroll-behavior:none;}
+  body{background:var(--ink);color:var(--fog);font-family:var(--sans);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation;}
   #root{min-height:100%;}
   .num{font-variant-numeric:tabular-nums lining-nums;}
   .fr{font-family:var(--serif);letter-spacing:-.5px;}
   button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;}
   input,select{font-family:inherit;}
-  ::-webkit-scrollbar{width:0;height:0;}
+  ::-webkit-scrollbar{display:none;width:0;height:0;}
+  *{scrollbar-width:none;-ms-overflow-style:none;}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 
   .app{max-width:520px;margin:0 auto;padding:calc(var(--safe-t) + 14px) 18px calc(var(--safe-b) + 94px);}
@@ -57,7 +58,7 @@
 
   .hero{padding:4px 2px 18px;border-bottom:1px solid var(--line-soft);margin-bottom:20px;}
   .hero .label{color:var(--fog-3);font-size:12px;font-weight:600;letter-spacing:.4px;margin:0 0 6px;}
-  .hero .bal{font-size:52px;line-height:1;font-weight:500;}
+  .hero .bal{font-size:50px;line-height:1;font-weight:600;letter-spacing:-1.5px;}
   .hero .delta{margin-top:12px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--fog-2);flex-wrap:wrap;}
   .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:600;}
   .pill.up{background:rgba(143,185,150,.14);color:var(--sage);}
@@ -121,7 +122,7 @@
   .goal:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
   .goal .g-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:10px;}
   .goal .g-name{font-size:14px;font-weight:600;} .goal .g-sub{font-size:11.5px;color:var(--fog-3);margin-top:3px;}
-  .goal .g-pct{font-family:var(--serif);font-size:22px;font-weight:500;}
+  .goal .g-pct{font-size:22px;font-weight:600;letter-spacing:-.5px;}
   .goal .g-amt{font-size:12px;color:var(--fog-2);margin-top:8px;} .goal .g-amt b{color:var(--fog);}
 
   .filterbar{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;}
@@ -145,7 +146,10 @@
   @keyframes fade{from{opacity:0}to{opacity:1}}
   .sheet{width:100%;max-width:520px;background:var(--ink-2);border:1px solid var(--line);border-bottom:none;border-radius:24px 24px 0 0;padding:10px 20px calc(var(--safe-b) + 24px);max-height:92vh;overflow-y:auto;animation:slideup .28s cubic-bezier(.3,.7,.3,1);}
   @keyframes slideup{from{transform:translateY(100%)}to{transform:translateY(0)}}
-  .grab{width:38px;height:4px;border-radius:999px;background:var(--line);margin:4px auto 16px;}
+  .draghandle{display:flex;align-items:center;justify-content:center;height:28px;margin:-4px -20px 8px;touch-action:none;cursor:grab;}
+  .draghandle:active{cursor:grabbing;}
+  .draghandle .bar{width:40px;height:4px;border-radius:999px;background:var(--line);transition:background .15s;}
+  .draghandle:active .bar{background:var(--fog-3);}
   .sheet h3{font-size:17px;font-weight:600;margin:0 0 4px;}
   .sheet .sub{color:var(--fog-3);font-size:12.5px;margin:0 0 18px;line-height:1.5;}
   .field{margin-bottom:14px;}
@@ -468,7 +472,7 @@ function viewResumen(){
     '<div class="legend">'+c.catTotals.slice(0,5).map(function(s){return '<div class="row"><span class="dot" style="background:'+s.color+'"></span><span class="nm">'+esc(s.label)+'</span><span class="vl num">'+eur(s.value)+'</span></div>';}).join('')+'</div></div>'
     : '<div class="empty" style="padding:20px">Aún no hay gastos este mes.</div>';
   return ''+
-  '<div class="hero"><p class="label">SALDO TOTAL</p><div class="bal fr num">'+eur(c.balance)+'</div>'+
+  '<div class="hero"><p class="label">SALDO TOTAL</p><div class="bal num">'+eur(c.balance)+'</div>'+
     '<div class="delta"><span class="pill '+(c.expDelta<=0?'up':'down')+'">'+(c.expDelta<=0?'▼':'▲')+' '+Math.abs(c.expDelta)+'%</span> gasto vs. mes anterior</div></div>'+
   '<div class="stats"><div class="stat"><div class="k">Ingresos</div><div class="v inc num">'+eur(c.income)+'</div></div>'+
     '<div class="stat"><div class="k">Gastos</div><div class="v exp num">'+eurAbs(c.expense)+'</div></div>'+
@@ -538,7 +542,7 @@ function viewPresu(){
   }).join('') : '<div class="empty" style="padding:16px 8px">Sin gastos fijos. Añade el alquiler, seguros, suscripciones… y se registrarán solos cada mes.</div>';
 
   return '<div class="hero" style="padding-bottom:14px"><p class="label">PRESUPUESTO DEL MES</p>'+
-    '<div class="bal fr num" style="font-size:40px">'+eur(spent)+'</div>'+
+    '<div class="bal num" style="font-size:40px">'+eur(spent)+'</div>'+
     '<div class="delta">de '+eur(tot)+' presupuestados · quedan <b style="color:var(--sage);margin-left:4px">'+eur(Math.max(0,tot-spent))+'</b></div></div>'+
     '<div class="section"><div class="sec-head"><h2>Gastos fijos mensuales</h2><button class="act" data-act="addFixed">+ Añadir</button></div>'+
     '<div class="card">'+fixRows+(S.recurring.length?'<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line-soft);display:flex;justify-content:space-between;font-size:13px;font-weight:600"><span style="color:var(--fog-2)">Total fijo al mes</span><span>'+eur(fixTot)+'</span></div>':'')+'</div></div>'+
@@ -549,14 +553,14 @@ function viewPresu(){
 function viewMetas(){
   var saved=S.goals.reduce(function(s,g){return s+g.saved;},0), target=S.goals.reduce(function(s,g){return s+g.target;},0);
   var head='<div class="hero" style="padding-bottom:14px"><p class="label">AHORRADO EN OBJETIVOS</p>'+
-    '<div class="bal fr num" style="font-size:40px">'+eur(saved)+'</div>'+
+    '<div class="bal num" style="font-size:40px">'+eur(saved)+'</div>'+
     '<div class="delta">de '+eur(target)+' en '+S.goals.length+' objetivo'+(S.goals.length===1?'':'s')+'</div></div>';
   if(S.goals.length===0) return head+'<div class="empty"><div class="big">Sin objetivos aún</div>Crea una meta de ahorro y ve cuánto te falta.<button class="cta" data-act="addGoal">Crear objetivo</button></div>';
   var cards=S.goals.map(function(g){
     var pct=Math.round(g.saved/g.target*100);
     return '<div class="goal"><div class="g-top"><div><div class="g-name">'+esc(g.name)+'</div>'+
       '<div class="g-sub">Meta: '+new Date(g.due).toLocaleDateString('es-ES',{month:'long',year:'numeric'})+'</div></div>'+
-      '<div class="g-pct fr" style="color:'+(pct>=100?'var(--sage)':'var(--gold)')+'">'+pct+'%</div></div>'+
+      '<div class="g-pct" style="color:'+(pct>=100?'var(--sage)':'var(--gold)')+'">'+pct+'%</div></div>'+
       '<div class="track" style="height:9px"><div class="fill" style="width:'+Math.min(100,pct)+'%;background:'+(pct>=100?'var(--sage)':'linear-gradient(90deg,var(--gold-dim),var(--gold))')+'"></div></div>'+
       '<div class="g-amt"><b>'+eur(g.saved)+'</b> de '+eur(g.target)+' · faltan '+eur(Math.max(0,g.target-g.saved))+'</div>'+
       '<div style="display:flex;gap:8px;margin-top:12px">'+
@@ -586,9 +590,52 @@ function render(){
 function openSheet(html){
   closeSheet(); // evita paneles superpuestos (ej. abrir contraseña desde Ajustes)
   var ov=document.createElement('div'); ov.className='overlay'; ov.id='sheet-ov';
-  ov.innerHTML='<div class="sheet" id="sheet"><div class="grab"></div>'+html+'</div>';
+  ov.innerHTML='<div class="sheet" id="sheet"><div class="draghandle" id="grab"><span class="bar"></span></div>'+html+'</div>';
   ov.addEventListener('click',function(e){ if(e.target===ov) closeSheet(); });
-  document.body.appendChild(ov); return ov;
+  document.body.appendChild(ov);
+  enableSheetDrag(ov);
+  return ov;
+}
+/* arrastrar hacia abajo (asa o borde superior) para cerrar, como una app nativa */
+function enableSheetDrag(ov){
+  var sheet=ov.querySelector('.sheet'), grab=ov.querySelector('#grab');
+  var startY=0, dy=0, dragging=false, fromHandle=false, startT=0;
+  function pt(e){ return (e.touches && e.touches[0]) ? e.touches[0] : e; }
+  function start(e){
+    var t=pt(e);
+    fromHandle = !!(grab && (e.target===grab || grab.contains(e.target)));
+    if(!fromHandle && sheet.scrollTop>0) return;   // deja hacer scroll si no vamos arriba del todo
+    dragging=true; startY=t.clientY; dy=0; startT=Date.now(); sheet.style.transition='none';
+  }
+  function move(e){
+    if(!dragging) return;
+    var t=pt(e); dy=t.clientY-startY;
+    if(!fromHandle && sheet.scrollTop>0){ dragging=false; sheet.style.transform=''; ov.style.background=''; return; }
+    if(dy<=0){ if(!fromHandle){ dragging=false; sheet.style.transform=''; ov.style.background=''; return; } dy=0; }
+    if(e.cancelable) e.preventDefault();
+    sheet.style.transform='translateY('+dy+'px)';
+    ov.style.background='rgba(5,9,7,'+Math.max(0.12,0.6-dy/650)+')';
+  }
+  function end(){
+    if(!dragging) return; dragging=false;
+    var dt=Date.now()-startT, vel=dy/(dt||1);
+    sheet.style.transition='transform .25s cubic-bezier(.3,.7,.3,1)';
+    if(dy>120 || vel>0.7){
+      sheet.style.transform='translateY(100%)';
+      ov.style.transition='background .25s ease'; ov.style.background='rgba(5,9,7,0)';
+      setTimeout(closeSheet,240);
+    } else { sheet.style.transform='translateY(0)'; ov.style.background=''; }
+  }
+  sheet.addEventListener('touchstart',start,{passive:true});
+  sheet.addEventListener('touchmove',move,{passive:false});
+  sheet.addEventListener('touchend',end);
+  sheet.addEventListener('touchcancel',end);
+  grab.addEventListener('mousedown',function(e){
+    start(e);
+    function mm(ev){ move(ev); }
+    function mu(ev){ end(ev); document.removeEventListener('mousemove',mm); document.removeEventListener('mouseup',mu); }
+    document.addEventListener('mousemove',mm); document.addEventListener('mouseup',mu);
+  });
 }
 function closeSheet(){ var ov=document.getElementById('sheet-ov'); if(ov) ov.remove(); }
 
